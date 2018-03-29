@@ -276,6 +276,8 @@ class Create extends AbstractCommand
             $contents = file_get_contents($altTemplate ?: $this->getMigrationTemplateFilename());
         }
 
+        $arr = preg_split('/(?=[A-Z])/', $className);
+        unset($arr[0]); // remove the first element ('')
         // inject the class names appropriate to this migration
         $classes = [
             '$namespaceDefinition' => $namespace !== null ? ('namespace ' . $namespace . ';') : '',
@@ -284,6 +286,7 @@ class Create extends AbstractCommand
             '$className' => $className,
             '$version' => Util::getVersionFromFileName($fileName),
             '$baseClassName' => $this->getConfig()->getMigrationBaseClassName(true),
+            '$classNameLowerCase' => strtolower(implode($arr, '_')),
         ];
         $contents = strtr($contents, $classes);
 
